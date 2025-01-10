@@ -1,21 +1,20 @@
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-import { pgUsers } from '../drizzle/schema';
+import { pgAdminExperts } from '../drizzle/schema';
 
-export const baseSchema = createInsertSchema(pgUsers);
+export const baseSchema = createInsertSchema(pgAdminExperts);
 
-export const UserSchema = baseSchema
+export const AdminExpertSchema = baseSchema
   .omit({
-    userId: true,
+    adminExpertId: true,
     login: true,
     password: true,
     name: true,
     surname: true,
     birthday: true,
-    companyName: true,
-    businessSector: true,
-    post: true,
+    town: true,
+    cv: true,
     fileName: true,
     fileDataIntro: true,
     bucketName: true,
@@ -27,9 +26,8 @@ export const UserSchema = baseSchema
     name: z.string(),
     surname: z.string(),
     birthday: z.date(),
-    companyName: z.string(),
-    businessSector: z.string(),
-    post: z.string(),
+    town: z.string(),
+    cv: z.string(),
     fileName: z.string().nullable(),
     fileDataIntro: z.string().nullable(),
     bucketName: z.string().nullable(),
@@ -43,8 +41,8 @@ export const UserSchema = baseSchema
       .regex(/^(?=.*\d)/, 'Пароль должен содержать хотя бы одну цифру'),
   });
 
-export const UpdateUserSchema = UserSchema.extend({
-  userId: z.string(),
+export const UpdateAdminExpertSchema = AdminExpertSchema.extend({
+  adminExpertId: z.string(),
 });
 
 export const UploadFileSchema = z.object({

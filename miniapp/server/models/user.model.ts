@@ -7,13 +7,22 @@ export type TUserFullWithToken = TUserFull & {
 };
 
 export type TCreateUser = TLoginUser & {
-  login: string;
-  isAdmin: boolean;
+  name: string,
+  surname: string,
+  birthday: Date,
+  companyName: string,
+  businessSector: string,
+  post: string,
+  fileName: string | null,
+  fileDataIntro: string | null,
+  bucketName: string | null,
+  interests: string[],
+  role: string,
 };
 
 export type TLoginUser = {
   password: string;
-  email: string;
+  login: string;
 };
 
 export type TUserWithTokens = TUserWithRefreshToken & {
@@ -27,12 +36,7 @@ export type TUserWithRefreshToken = {
 
 export type TUserCtx = {
   id: string;
-  email: string;
-};
-
-export type TUserRoleByComapnyId = {
-  userId: string;
-  companyId: string;
+  login: string;
 };
 
 export type TAuth = {

@@ -1,23 +1,23 @@
-import { UserRepository } from '../repositories/user.repository';
+import { AdminExpertRepository } from '../repositories/admin_expert.repository';
 import { ErrorResponse } from '../responses/error-response';
 import { CommonResponse } from '../responses/response';
 import { CommonService } from '../services/common-service';
 import { publicProcedure } from '../trpc';
 import { StringSchema } from '../zod/common';
 import {
-  UpdateUserSchema,
-  UserSchema,
-} from '../zod/user';
+  UpdateAdminExpertSchema,
+  AdminExpertSchema,
+} from '../zod/admin_expert';
 
-export const UserRouter = {
+export const AdminExpertRouter = {
 
-  insert: publicProcedure.input(UserSchema).mutation(async (opts) => {
+  insert: publicProcedure.input(AdminExpertSchema).mutation(async (opts) => {
     try {
       const { input } = opts;
-      const user = await UserRepository.insertUser(input);
+      const adminExpert = await AdminExpertRepository.insertAdminExpert(input);
       return new CommonResponse({
-        ...user,
-        userId: user.userId.toString(),
+        ...adminExpert,
+        adminExpertId: adminExpert.adminExpertId.toString(),
       });
     } catch (e) {
       const err = e as Error;
@@ -29,10 +29,10 @@ export const UserRouter = {
     try {
       const { ctx } = opts;
       await CommonService.checkAuth(ctx, true);
-      const users = await UserRepository.getUsers();
-      const res = users.map((el) => ({
+      const adminExperts = await AdminExpertRepository.getAdminExperts();
+      const res = adminExperts.map((el) => ({
         ...el,
-        userId: String(el.userId),
+        adminExpertId: String(el.adminExpertId),
       }));
       return new CommonResponse(res);
     } catch (e) {
@@ -45,10 +45,10 @@ export const UserRouter = {
     try {
       const { ctx, input } = opts;
       await CommonService.checkAuth(ctx, false);
-      const user = await UserRepository.getUserById(BigInt(input));
+      const adminExpert = await AdminExpertRepository.getAdminExpertById(BigInt(input));
       return new CommonResponse({
-        ...user,
-        userId: user.userId.toString(),
+        ...adminExpert,
+        adminExpertId: adminExpert.adminExpertId.toString(),
       });
     } catch (e) {
       const err = e as Error;
@@ -60,10 +60,10 @@ export const UserRouter = {
     try {
       const { ctx, input } = opts;
       await CommonService.checkAuth(ctx, false);
-      const user = await UserRepository.getUserByLogin(input);
+      const adminExpert = await AdminExpertRepository.getAdminExpertByLogin(input);
       return new CommonResponse({
-        ...user,
-        userId: user.userId.toString(),
+        ...adminExpert,
+        adminExpertId: adminExpert.adminExpertId.toString(),
       });
     } catch (e) {
       const err = e as Error;
@@ -71,15 +71,15 @@ export const UserRouter = {
     }
   }),
 
-  update: publicProcedure.input(UpdateUserSchema).mutation(async (opts) => {
+  update: publicProcedure.input(UpdateAdminExpertSchema).mutation(async (opts) => {
     try {
       const { ctx, input } = opts;
       await CommonService.checkAuth(ctx, true);
-      const user = await UserRepository.updateUser({
+      const adminExpert = await AdminExpertRepository.updateAdminExpert({
         ...input,
-        userId: BigInt(input.userId),
+        adminExpertId: BigInt(input.adminExpertId),
       });
-      return new CommonResponse(user.toString());
+      return new CommonResponse(adminExpert.toString());
     } catch (e) {
       const err = e as Error;
       return new ErrorResponse(err);
@@ -90,7 +90,7 @@ export const UserRouter = {
     try {
       const { ctx, input } = opts;
       await CommonService.checkAuth(ctx, true);
-      await UserRepository.deleteUser(BigInt(input));
+      await AdminExpertRepository.deleteAdminExpert(BigInt(input));
       return new CommonResponse(null);
     } catch (e) {
       const err = e as Error;

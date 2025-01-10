@@ -1,15 +1,14 @@
 import { bigserial, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-export const pgUsersSchema = pgTable('users', {
+export const pgAdminsExpersSchema = pgTable('admins_expers', {
     login: text('login').unique().notNull(),
     password: text('password').notNull(),
-    userId: bigserial('user_id', { mode: 'bigint' }).primaryKey(),
+    adminExpertId: bigserial('admin_exprt_id', { mode: 'bigint' }).primaryKey(),
     name: text('name').notNull(),
     surname: text('surname').notNull(),
     birthday: timestamp('birthday').notNull(),
-    companyName: text('company_name').notNull(),
-    businessSector: text('business_sector').notNull(),
-    post: text('post').notNull(),
+    town: text('town').notNull(),
+    cv: text('cv').notNull(),
     fileName: text('file_name'),
     fileDataIntro: text('file_data_intro'),
     bucketName: text('bucket_name'),

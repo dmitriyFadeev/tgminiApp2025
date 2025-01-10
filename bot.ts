@@ -15,8 +15,8 @@ const dirname = path.dirname(filename);
 
 const token = process.env.BOT_TOKEN;
 const miniappUrl = process.env.BOT_MINI_APP_URL
-const botUrl = process.env.BOT_APP_URL
-if (!token || !miniappUrl || !botUrl) {
+//const botUrl = process.env.BOT_APP_URL
+if (!token || !miniappUrl) {
     throw new Error('no bot token or miniapp url provided');
 }
 const bot = new Telegraf(token);
@@ -29,7 +29,7 @@ bot.start(async (ctx) => {
         return;
     }
 
-    const caption = 'ExpertHub - Объединяет предпринимателей и экспертов в безопасное бизнес-сообщество с профилями участников, тематическими чатами, календарем событий и уникальными нетворкинг-мероприятиями. Всё для удобного общения и развития вашего бизнеса.';
+    const caption = 'кук11222111ExpertHub - Объединяет предпринимателей и экспертов в безопасное бизнес-сообщество с профилями участников, тематическими чатами, календарем событий и уникальными нетворкинг-мероприятиями. Всё для удобного общения и развития вашего бизнеса.';
 
     const options = Markup.inlineKeyboard([
         [

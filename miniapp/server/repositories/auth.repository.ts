@@ -1,18 +1,18 @@
 import { TRPCError } from '@trpc/server';
 import jwt from 'jsonwebtoken';
 
-import { env } from '../../env';
+import { env } from '../../../env';
 import type { TAuth, TLoginUser, TUserWithTokens } from '../models/user.model';
 import { CommonService } from '../services/common-service';
 import { UserRepository } from './user.repository';
 
 export class AuthRepository {
-  static generateTokens(id: string, email: string): TAuth {
-    const accessToken = jwt.sign({ id, email }, env.JWT_SECRET, {
+  static generateTokens(id: string, login: string): TAuth {
+    const accessToken = jwt.sign({ id, login }, env.JWT_SECRET, {
       expiresIn: env.JWT_EXPIRATION,
     });
 
-    const refreshToken = jwt.sign({ id, email }, env.JWT_SECRET, {
+    const refreshToken = jwt.sign({ id, login }, env.JWT_SECRET, {
       expiresIn: env.REFRESH_TOKEN_EXPIRATION,
     });
     return {
@@ -21,11 +21,11 @@ export class AuthRepository {
     };
   }
   static async login(user: TLoginUser): Promise<TUserWithTokens> {
-    const foundUser = await UserRepository.getUserByEmail(user.email);
+    const foundUser = await UserRepository.getUserByLogin(user.login);
     await CommonService.verifyPassword(user.password, foundUser.password);
     const tokens = this.generateTokens(
       foundUser.userId.toString(),
-      foundUser.email
+      foundUser.login
     );
     await UserRepository.updateRefreshToken(
       foundUser.userId,
@@ -48,7 +48,7 @@ export class AuthRepository {
     jwt.verify(token, JWT_SECRET);
     const tokens = this.generateTokens(
       foundUser.userId.toString(),
-      foundUser.email
+      foundUser.login
     );
     await UserRepository.updateRefreshToken(
       foundUser.userId,
