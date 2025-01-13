@@ -1,6 +1,4 @@
-import { TRPCError } from '@trpc/server';
 import jwt from 'jsonwebtoken';
-
 import { env } from '../../../env';
 import type { TAuth, TLoginUser, TUserWithTokens } from '../models/user.model';
 import { CommonService } from '../services/common-service';

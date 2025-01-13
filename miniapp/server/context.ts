@@ -1,7 +1,7 @@
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 import jwt from 'jsonwebtoken';
 
-import { env } from './env';
+import { env } from '../../env';
 import type { TUserCtx } from './models/user.model';
 
 export interface Context extends FetchCreateContextFnOptions {

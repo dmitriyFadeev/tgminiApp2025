@@ -3,7 +3,7 @@ export type TUserFull = TCreateUser & {
 };
 
 export type TUserFullWithToken = TUserFull & {
-  refreshToken: string;
+  refreshToken: string | null;
 };
 
 export type TCreateUser = TLoginUser & {

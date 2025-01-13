@@ -8,6 +8,7 @@ import {
   UpdateAdminExpertSchema,
   AdminExpertSchema,
 } from '../zod/admin_expert';
+import { AdminExpertToEventSchema } from '../zod/admin_expert_to_event';
 
 export const AdminExpertRouter = {
 
@@ -18,6 +19,21 @@ export const AdminExpertRouter = {
       return new CommonResponse({
         ...adminExpert,
         adminExpertId: adminExpert.adminExpertId.toString(),
+      });
+    } catch (e) {
+      const err = e as Error;
+      return new ErrorResponse(err);
+    }
+  }),
+
+  addToEvent: publicProcedure.input(AdminExpertToEventSchema).mutation(async (opts) => {
+    try {
+      const { input } = opts;
+      const result = await AdminExpertRepository.addToEvent(input);
+      return new CommonResponse({
+        ...result,
+        adminExpertId: result.adminExpertId.toString(),
+        eventId: result.eventId.toString()
       });
     } catch (e) {
       const err = e as Error;

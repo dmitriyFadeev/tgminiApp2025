@@ -3,7 +3,7 @@ export type TAdminExpertFull = TCreateAdminExpert & {
   };
   
   export type TAdminExpertFullWithToken = TAdminExpertFull & {
-    refreshToken: string;
+    refreshToken: string | null;
   };
   
   export type TCreateAdminExpert = TLoginAdminExpert & {

@@ -11,6 +11,9 @@ import type {
 } from '../models/admin_expert.model';
 import { CommonService } from '../services/common-service';
 import { AuthRepository } from './auth.repository';
+import { TAdminExpertToEvent } from '../models/admin_expert_to_event.model';
+import { EventRepository } from './event.repository';
+import { pgAdminExpertsToEventsSchema } from '../drizzle/schemas';
 
 export class AdminExpertRepository {
   static async updateRefreshToken(
@@ -35,7 +38,7 @@ export class AdminExpertRepository {
   }
 
   static async adminExpertsExist(logins: string[]): Promise<TAdminExpertFull[]> {
-    let adminExpertsDb = [] as TAdminExpertFull[];
+    let adminExpertsDb: TAdminExpertFull[] = [];
     if (logins) {
       adminExpertsDb = await db
         .select()
@@ -81,7 +84,7 @@ export class AdminExpertRepository {
       .select()
       .from(pgAdminExperts)
       .where(eq(pgAdminExperts.adminExpertId, id));
-    const adminExpert = result[0] as TAdminExpertFull;
+    const adminExpert:TAdminExpertFull = result[0];
     if (!adminExpert || !adminExpert.adminExpertId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -91,12 +94,22 @@ export class AdminExpertRepository {
     return adminExpert;
   }
 
+  static async addToEvent(data: TAdminExpertToEvent): Promise<TAdminExpertToEvent>{
+    await EventRepository.getEventById(data.eventId)
+    await this.getAdminExpertById(data.adminExpertId)
+    const result = await db.insert(pgAdminExpertsToEventsSchema)
+      .values(data)
+      .returning();
+    const inserted: TAdminExpertToEvent = result[0]
+    return inserted
+  }
+
   static async getAdminExpertByIdWithToken(id: bigint): Promise<TAdminExpertFullWithToken> {
     const result = await db
       .select()
       .from(pgAdminExperts)
       .where(eq(pgAdminExperts.adminExpertId, id));
-    const adminExpert = result[0] as TAdminExpertFullWithToken;
+    const adminExpert:TAdminExpertFullWithToken = result[0];
     if (!adminExpert || !adminExpert.adminExpertId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -111,7 +124,7 @@ export class AdminExpertRepository {
       .select()
       .from(pgAdminExperts)
       .where(eq(pgAdminExperts.login, login));
-    const adminExpert = result[0] as TAdminExpertFull;
+    const adminExpert:TAdminExpertFull = result[0];
     if (!adminExpert || !adminExpert.adminExpertId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -123,7 +136,7 @@ export class AdminExpertRepository {
 
   static async getAdminExperts(): Promise<TAdminExpertFull[]> {
     const result = await db.select().from(pgAdminExperts);
-    const adminExperts = result as TAdminExpertFull[];
+    const adminExperts:TAdminExpertFull[] = result;
     return adminExperts;
   }
 
@@ -137,7 +150,7 @@ export class AdminExpertRepository {
       })
       .where(eq(pgAdminExperts.adminExpertId, updatedAdminExpert.adminExpertId))
       .returning();
-    const adminExpert = result[0] as TAdminExpertFull;
+    const adminExpert:TAdminExpertFull = result[0];
     if (!adminExpert || !adminExpert.adminExpertId) {
       throw new TRPCError({
         code: 'NOT_FOUND',

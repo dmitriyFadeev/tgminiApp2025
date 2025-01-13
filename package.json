@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start:bot": "node --loader ts-node/esm bot.ts",
-    "start:miniapp": "node --loader ts-node/esm miniapp/server/index.ts"
+    "start:miniapp": "node --loader ts-node/esm miniapp/server/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +31,7 @@
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "@types/pg": "^8.11.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

@@ -11,6 +11,9 @@ import type {
 } from '../models/user.model';
 import { CommonService } from '../services/common-service';
 import { AuthRepository } from './auth.repository';
+import { EventRepository } from './event.repository';
+import { TUserToEvent } from '../models/user_to_event.model';
+import { pgUsersToEventsSchema } from '../drizzle/schemas';
 
 export class UserRepository {
   static async updateRefreshToken(
@@ -35,7 +38,7 @@ export class UserRepository {
   }
 
   static async usersExist(logins: string[]): Promise<TUserFull[]> {
-    let usersDb = [] as TUserFull[];
+    let usersDb:TUserFull[] = [];
     if (logins) {
       usersDb = await db
         .select()
@@ -80,7 +83,7 @@ export class UserRepository {
       .select()
       .from(pgUsers)
       .where(eq(pgUsers.userId, id));
-    const user = result[0] as TUserFull;
+    const user:TUserFull = result[0];
     if (!user || !user.userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -95,7 +98,7 @@ export class UserRepository {
       .select()
       .from(pgUsers)
       .where(eq(pgUsers.userId, id));
-    const user = result[0] as TUserFullWithToken;
+    const user:TUserFullWithToken = result[0];
     if (!user || !user.userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -105,12 +108,22 @@ export class UserRepository {
     return user;
   }
 
+  static async addToEvent(data: TUserToEvent): Promise<TUserToEvent>{
+    await EventRepository.getEventById(data.eventId)
+    await this.getUserById(data.userId)
+    const result = await db.insert(pgUsersToEventsSchema)
+      .values(data)
+      .returning();
+    const inserted: TUserToEvent= result[0]
+    return inserted
+  }
+
   static async getUserByLogin(login: string): Promise<TUserFull> {
     const result = await db
       .select()
       .from(pgUsers)
       .where(eq(pgUsers.login, login));
-    const user = result[0] as TUserFull;
+    const user:TUserFull = result[0];
     if (!user || !user.userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
@@ -122,7 +135,7 @@ export class UserRepository {
 
   static async getUsers(): Promise<TUserFull[]> {
     const result = await db.select().from(pgUsers);
-    const users = result as TUserFull[];
+    const users:TUserFull[] = result;
     return users;
   }
 
@@ -135,7 +148,7 @@ export class UserRepository {
         password})
       .where(eq(pgUsers.userId, updatedUser.userId))
       .returning();
-    const user = result[0] as TUserFull;
+    const user:TUserFull = result[0];
     if (!user || !user.userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
