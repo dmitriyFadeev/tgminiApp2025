@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
-import { eq, inArray } from 'drizzle-orm';
-import { pgAdminExperts } from '../drizzle/schema';
+import { and, eq, inArray } from 'drizzle-orm';
+import { pgAdminExperts, pgAdminExpertsToEvents } from '../drizzle/schema';
 import db from '../../../db';
 import type {
   TCreateAdminExpert,
@@ -13,7 +13,6 @@ import { CommonService } from '../services/common-service';
 import { AuthRepository } from './auth.repository';
 import { TAdminExpertToEvent } from '../models/admin_expert_to_event.model';
 import { EventRepository } from './event.repository';
-import { pgAdminExpertsToEventsSchema } from '../drizzle/schemas';
 
 export class AdminExpertRepository {
   static async updateRefreshToken(
@@ -95,13 +94,62 @@ export class AdminExpertRepository {
   }
 
   static async addToEvent(data: TAdminExpertToEvent): Promise<TAdminExpertToEvent>{
-    await EventRepository.getEventById(data.eventId)
+    const event = await EventRepository.getEventById(data.eventId)
+    await EventRepository.updateFreeSpaces(event.eventId, event.freeSpaces--)
     await this.getAdminExpertById(data.adminExpertId)
-    const result = await db.insert(pgAdminExpertsToEventsSchema)
+    const result = await db.insert(pgAdminExpertsToEvents)
       .values(data)
       .returning();
     const inserted: TAdminExpertToEvent = result[0]
     return inserted
+  }
+
+  static async getAdminExpertEventByEvent(adminExpertId: bigint,eventId: bigint){
+    const adminExpertEvents = await db
+      .select()
+      .from(pgAdminExpertsToEvents)
+      .where(and(eq(pgAdminExpertsToEvents.adminExpertId, adminExpertId), eq(pgAdminExpertsToEvents.eventId, eventId)));
+    const adminExpertEvent:TAdminExpertToEvent = adminExpertEvents[0];
+    if (!adminExpertEvent || !adminExpertEvent.adminExpertId) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'adminExpert is not attached to event',
+      });
+    }
+    return adminExpertEvent;
+  }
+
+  static async removeFromEvent(data: TAdminExpertToEvent): Promise<TAdminExpertToEvent>{
+    const adminExpertEvent = await this.getAdminExpertEventByEvent(data.adminExpertId, data.eventId)
+    if(adminExpertEvent.approved){
+      const event = await EventRepository.getEventById(data.eventId)
+      await EventRepository.updateFreeSpaces(event.eventId, event.freeSpaces++)
+    }
+    await this.getAdminExpertById(data.adminExpertId)
+    const result = await db.delete(pgAdminExpertsToEvents)
+      .where(and(
+        eq(pgAdminExpertsToEvents.adminExpertId, data.adminExpertId), 
+        eq(pgAdminExpertsToEvents.eventId, data.eventId)))
+      .returning()
+    const removed: TAdminExpertToEvent= result[0]
+    return removed
+  }
+
+  static async deleteAllFromEvent(eventId: bigint){
+    await db.delete(pgAdminExpertsToEvents)
+      .where(eq(pgAdminExpertsToEvents.eventId, eventId))
+  }
+
+  static async setAdminExpertEventApproved(
+    adminExpertId: bigint,
+    eventId: bigint
+  ) {
+    await db
+      .update(pgAdminExpertsToEvents)
+      .set({
+        approved: true
+      })
+      .where(and(eq(pgAdminExpertsToEvents.adminExpertId, adminExpertId), eq(pgAdminExpertsToEvents.eventId, eventId)))
   }
 
   static async getAdminExpertByIdWithToken(id: bigint): Promise<TAdminExpertFullWithToken> {

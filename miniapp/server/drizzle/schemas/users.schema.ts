@@ -16,4 +16,5 @@ export const pgUsersSchema = pgTable('users', {
     interests: text('interests').array().notNull(),
     role: text('role').notNull(),
     refreshToken: text('refresh_token'),
+    firebaseFcmToken: text('firebase_fcm_token').notNull()
 });

@@ -18,6 +18,7 @@ export type TCreateUser = TLoginUser & {
   bucketName: string | null,
   interests: string[],
   role: string,
+  firebaseFcmToken: string
 };
 
 export type TLoginUser = {

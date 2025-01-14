@@ -10,7 +10,8 @@ const pgAdminExpertsToEventsSchema = pgTable(
         eventId: bigint('event_id', { mode: 'bigint' })
             .notNull()
             .references(() => pgEvents.eventId),
-        isOrganizer: boolean("is_organizer").notNull().default(false)
+        isOrganizer: boolean("is_organizer").notNull().default(false),
+        approved: boolean("approved").notNull().default(false)
     },
     (t) => {
       return {

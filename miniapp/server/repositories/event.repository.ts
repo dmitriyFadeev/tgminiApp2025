@@ -6,6 +6,8 @@ import type {
   TCreateEvent,
   TEvent,
 } from '../models/event.model';
+import { AdminExpertRepository } from './admin_expert.repository';
+import { UserRepository } from './user.repository';
 
 export class EventRepository {
 
@@ -24,6 +26,22 @@ export class EventRepository {
       .select()
       .from(pgEvents)
       .where(eq(pgEvents.eventId, id));
+    const event:TEvent = result[0];
+    if (!event || !event.eventId) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'event by id had not been found',
+      });
+    }
+    return event;
+  }
+
+  static async updateFreeSpaces(id: bigint, freeSpaces: number): Promise<TEvent> {
+    const result = await db
+      .update(pgEvents)
+      .set({freeSpaces})
+      .where(eq(pgEvents.eventId, id))
+      .returning();
     const event:TEvent = result[0];
     if (!event || !event.eventId) {
       throw new TRPCError({
@@ -63,5 +81,7 @@ export class EventRepository {
         code: 'NOT_FOUND',
         message: 'event by id had not been found',
       });
+    await AdminExpertRepository.deleteAllFromEvent(id)
+    await UserRepository.deleteAllFromEvent(id)
   }
 }

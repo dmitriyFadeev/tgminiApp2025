@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
-import { eq, inArray } from 'drizzle-orm';
-import { pgUsers } from '../drizzle/schema';
+import { and, eq, inArray } from 'drizzle-orm';
+import { pgAdminExperts, pgUsers, pgUsersToEvents } from '../drizzle/schema';
 import db from '../../../db';
 import type {
   TCreateUser,
@@ -13,7 +13,6 @@ import { CommonService } from '../services/common-service';
 import { AuthRepository } from './auth.repository';
 import { EventRepository } from './event.repository';
 import { TUserToEvent } from '../models/user_to_event.model';
-import { pgUsersToEventsSchema } from '../drizzle/schemas';
 
 export class UserRepository {
   static async updateRefreshToken(
@@ -51,6 +50,11 @@ export class UserRepository {
         });
     }
     return usersDb;
+  }
+
+  static async deleteAllFromEvent(eventId: bigint){
+    await db.delete(pgUsersToEvents)
+      .where(eq(pgUsersToEvents.eventId, eventId))
   }
 
   static async insertUser(user: TCreateUser): Promise<TUserWithTokens> {
@@ -109,13 +113,58 @@ export class UserRepository {
   }
 
   static async addToEvent(data: TUserToEvent): Promise<TUserToEvent>{
-    await EventRepository.getEventById(data.eventId)
+    const event = await EventRepository.getEventById(data.eventId)
+    //await EventRepository.updateFreeSpaces(event.eventId, event.freeSpaces--)
     await this.getUserById(data.userId)
-    const result = await db.insert(pgUsersToEventsSchema)
+    const result = await db.insert(pgUsersToEvents)
       .values(data)
       .returning();
     const inserted: TUserToEvent= result[0]
     return inserted
+  }
+
+  static async getUserEventByEvent(userId: bigint,eventId: bigint){
+    const userEvents = await db
+      .select()
+      .from(pgUsersToEvents)
+      .where(and(eq(pgUsersToEvents.userId, userId), eq(pgUsersToEvents.eventId, eventId)));
+    const userEvent:TUserToEvent = userEvents[0];
+    if (!userEvent || !userEvent.userId) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'user by is not in event',
+      });
+    }
+    return userEvent;
+  }
+
+  static async setUserEventApproved(
+    adminExpertId: bigint,
+    eventId: bigint
+  ) {
+    await db
+      .update(pgUsersToEvents)
+      .set({
+        approved: true
+      })
+      .where(and(eq(pgUsersToEvents.userId, adminExpertId), eq(pgUsersToEvents.eventId, eventId)))
+  }
+
+  static async removeFromEvent(data: TUserToEvent): Promise<TUserToEvent>{
+    const userEvent = await this.getUserEventByEvent(data.userId,data.eventId)
+    if(userEvent.approved){
+      const event = await EventRepository.getEventById(data.eventId)
+      await EventRepository.updateFreeSpaces(event.eventId, event.freeSpaces++)
+    }
+      
+    await this.getUserById(data.userId)
+    const result = await db.delete(pgUsersToEvents)
+      .where(and(
+        eq(pgUsersToEvents.userId, data.userId), 
+        eq(pgUsersToEvents.eventId, data.eventId)))
+      .returning()
+    const removed: TUserToEvent= result[0]
+    return removed
   }
 
   static async getUserByLogin(login: string): Promise<TUserFull> {
