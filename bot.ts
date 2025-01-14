@@ -2,19 +2,18 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Telegraf, Markup } from 'telegraf';
-import dotenv from 'dotenv'; 
 import fs from 'fs';
+import { env } from './env';
 
-dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT_BOT || 3000;
+const PORT = env.PORT_BOT || 3000;
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const token = process.env.BOT_TOKEN;
-const miniappUrl = process.env.BOT_MINI_APP_URL
+const token = env.BOT_TOKEN;
+const miniappUrl = env.BOT_MINI_APP_URL
 //const botUrl = process.env.BOT_APP_URL
 if (!token || !miniappUrl) {
     throw new Error('no bot token or miniapp url provided');
@@ -29,7 +28,7 @@ bot.start(async (ctx) => {
         return;
     }
 
-    const caption = 'кук11222111ExpertHub - Объединяет предпринимателей и экспертов в безопасное бизнес-сообщество с профилями участников, тематическими чатами, календарем событий и уникальными нетворкинг-мероприятиями. Всё для удобного общения и развития вашего бизнеса.';
+    const caption = 'ExpertHub - Объединяет предпринимателей и экспертов в безопасное бизнес-сообщество с профилями участников, тематическими чатами, календарем событий и уникальными нетворкинг-мероприятиями. Всё для удобного общения и развития вашего бизнеса.';
 
     const options = Markup.inlineKeyboard([
         [

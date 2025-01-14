@@ -1,9 +1,8 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import { env } from '../../env';
 
 const app = express();
-dotenv.config();
-const PORT = process.env.PORT_MINIAPP;
+const PORT = env.PORT_MINIAPP;
 
 app.get('/', (req, res) => {
     res.send(`

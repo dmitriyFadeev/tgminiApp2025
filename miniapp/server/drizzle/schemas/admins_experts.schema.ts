@@ -1,9 +1,9 @@
 import { bigserial, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-export const pgAdminsExpersSchema = pgTable('admins_expers', {
+export const pgAdminsExpersSchema = pgTable('admins_experts', {
     login: text('login').unique().notNull(),
     password: text('password').notNull(),
-    adminExpertId: bigserial('admin_exprt_id', { mode: 'bigint' }).primaryKey(),
+    adminExpertId: bigserial('admin_expert_id', { mode: 'bigint' }).primaryKey(),
     name: text('name').notNull(),
     surname: text('surname').notNull(),
     birthday: timestamp('birthday').notNull(),

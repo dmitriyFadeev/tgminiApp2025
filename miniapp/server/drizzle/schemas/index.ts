@@ -1,2 +1,6 @@
 export * from './users.schema'
 export * from './admins_experts.schema'
+export * from './events.schema'
+export * from './admin-experts-to-events.schema'
+export * from './users-to-events.schema'
+export * from './message.schema'

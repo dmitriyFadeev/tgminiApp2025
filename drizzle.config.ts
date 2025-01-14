@@ -6,9 +6,9 @@ const url = env.DB_URL;
 if (!url) throw new Error('No url provided');
 
 export default defineConfig({
-  out: './drizzle/migrations',
+  out: './miniapp/server/drizzle/migrations',
   dialect: 'postgresql',
-  schema: './drizzle/schema.ts',
+  schema: './miniapp/server/drizzle/schema.ts',
   dbCredentials: {
     url,
   },
