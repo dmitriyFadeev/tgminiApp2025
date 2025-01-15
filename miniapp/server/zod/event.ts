@@ -12,7 +12,7 @@ export const EventSchema = baseSchema
     freeSpaces: true,
     imageUrl: true,
     description: true,
-    interests: true,
+    interest: true,
   })
   .extend({
     name: z.string(),
@@ -20,7 +20,7 @@ export const EventSchema = baseSchema
     date: z.date(),
     imageUrl: z.string(),
     description: z.string(),
-    interests: z.array(z.string()),
+    interest: z.string(),
   });
 
 export const UpdateEventSchema = EventSchema.extend({

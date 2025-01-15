@@ -4,9 +4,25 @@ export type TCreateEvent = {
     freeSpaces: number,
     imageUrl: string,
     description: string,
-    interests: string[],
+    interest: string,
+    onWater: boolean,
+    location: string,
 };
 
 export type TEvent = TCreateEvent & {
     eventId: bigint
+}
+
+export type TFiltersEvent = {
+    dateFrom: Date,
+    dateTo: Date,
+    freeSpaces: boolean,
+    interests: string[],
+    onWater: boolean,
+    location: string,
+}
+
+export type TFiltersEventResponse = {
+    allEvents: TEvent[]
+    filtered: TEvent[]
 }

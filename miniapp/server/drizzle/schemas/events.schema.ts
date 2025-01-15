@@ -1,4 +1,4 @@
-import { bigserial, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { bigserial, boolean, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const pgEventsSchema = pgTable('events', {
     eventId: bigserial('event_id', { mode: 'bigint' }).primaryKey(),
@@ -7,5 +7,7 @@ export const pgEventsSchema = pgTable('events', {
     freeSpaces: integer('free_spaces').notNull().default(0),
     imageUrl: text('image_url').notNull(),
     description: text('description').notNull(),
-    interests: text('interests').array().notNull(),
+    interest: text('interest').notNull(),
+    onWater: boolean("on_water").notNull().default(false),
+    location: text('location').notNull(),
 });

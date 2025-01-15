@@ -183,9 +183,8 @@ export class UserRepository {
   }
 
   static async getUsers(): Promise<TUserFull[]> {
-    const result = await db.select().from(pgUsers);
-    const users:TUserFull[] = result;
-    return users;
+    const result:TUserFull[] = await db.select().from(pgUsers);
+    return result;
   }
 
   static async updateUser(updatedUser: TUserFull): Promise<bigint> {

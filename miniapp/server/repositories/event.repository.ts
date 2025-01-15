@@ -1,10 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, inArray, lte, or } from 'drizzle-orm';
 import { pgEvents } from '../drizzle/schema';
 import db from '../../../db';
 import type {
   TCreateEvent,
   TEvent,
+  TFiltersEvent,
+  TFiltersEventResponse,
 } from '../models/event.model';
 import { AdminExpertRepository } from './admin_expert.repository';
 import { UserRepository } from './user.repository';
@@ -52,10 +54,23 @@ export class EventRepository {
     return event;
   }
 
-  static async getEvents(): Promise<TEvent[]> {
-    const result = await db.select().from(pgEvents);
-    const events:TEvent[] = result;
-    return events;
+  static async getEvents(filters:TFiltersEvent): Promise<TFiltersEventResponse> {
+    const allEventsDb = await db.select().from(pgEvents);
+    const filtersobj = and(
+      filters.dateFrom? gte(pgEvents.date, filters.dateFrom): undefined,
+      filters.dateTo? lte(pgEvents.date, filters.dateTo): undefined,
+      filters.freeSpaces? gte(pgEvents.freeSpaces, 1): undefined,
+      filters.onWater? eq(pgEvents.onWater, true): undefined,
+      filters.location? eq(pgEvents.location, filters.location): undefined,
+      filters.interests.length > 0 ?
+        inArray(pgEvents.interest, filters.interests): undefined
+    )
+    const filtered: TEvent[] = await db.select().from(pgEvents).where(filtersobj)
+    const allEvents: TEvent[] = allEventsDb;
+    return {
+      allEvents, 
+      filtered
+    }
   }
 
   static async updateEvent(updatedEvent: TEvent): Promise<bigint> {

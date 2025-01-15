@@ -35,9 +35,8 @@ export class MessageRepository {
   }
 
   static async getMessages(): Promise<TMessage[]> {
-    const result = await db.select().from(pgMessages);
-    const messages:TMessage[] = result;
-    return messages;
+    const result:TMessage[] = await db.select().from(pgMessages);
+    return result;
   }
 
   static async updateMessage(updatedMessage: TMessage): Promise<bigint> {

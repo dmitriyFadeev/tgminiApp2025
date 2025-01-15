@@ -183,9 +183,8 @@ export class AdminExpertRepository {
   }
 
   static async getAdminExperts(): Promise<TAdminExpertFull[]> {
-    const result = await db.select().from(pgAdminExperts);
-    const adminExperts:TAdminExpertFull[] = result;
-    return adminExperts;
+    const result:TAdminExpertFull[] = await db.select().from(pgAdminExperts);
+    return result;
   }
 
   static async updateAdminExpert(updatedAdminExpert: TAdminExpertFull): Promise<bigint> {

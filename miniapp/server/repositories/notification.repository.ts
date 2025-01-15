@@ -35,9 +35,8 @@ export class NotificationRepository {
   }
 
   static async getNotifications(): Promise<TNotification[]> {
-    const result = await db.select().from(pgNotifications);
-    const notifications:TNotification[] = result;
-    return notifications;
+    const result:TNotification[] = await db.select().from(pgNotifications);
+    return result;
   }
 
   static async updateNotification(updatedNotification: TNotification): Promise<bigint> {
