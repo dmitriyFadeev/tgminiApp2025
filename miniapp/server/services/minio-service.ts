@@ -1,6 +1,6 @@
 import * as Minio from 'minio';
 
-import { env } from '../../env';
+import { env } from '../../../env';
 import type { TMinioUpload } from '../dtos/minio';
 
 class MinioClient {
