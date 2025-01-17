@@ -2,10 +2,10 @@ import { createCipheriv, createDecipheriv } from 'crypto';
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcrypt';
 
-import { env } from '../env';
+import { env } from '../../../env';
 import type { Context } from '../context';
 import type { TUserCtx } from '../models/user.model';
-import { UserRepository } from '../repositories/user.repository';
+import { AdminExpertRepository } from '../repositories/admin_expert.repository';
 
 export class CommonService {
   static async checkAuth(ctx: Context, adminCheck: boolean): Promise<TUserCtx> {
@@ -13,8 +13,8 @@ export class CommonService {
       throw new Error('Пользователь не авторизован');
     }
     if (adminCheck) {
-      const user = await UserRepository.getUserById(BigInt(ctx.user.id));
-      if (!user.isAdmin)
+      const user = await AdminExpertRepository.getAdminExpertById(BigInt(ctx.user.id));
+      if (!user.role != true)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Пользователь не администратор',

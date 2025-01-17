@@ -1,4 +1,4 @@
-export enum EUserRole {
+export enum EAdminExpertRole {
     admin = 'admin',
     expert = 'expert',
 }

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq, inArray } from 'drizzle-orm';
-import { pgAdminExperts, pgUsers, pgUsersToEvents } from '../drizzle/schema';
+import { pgUsers, pgUsersToEvents } from '../drizzle/schema';
 import db from '../../../db';
 import type {
   TCreateUser,
