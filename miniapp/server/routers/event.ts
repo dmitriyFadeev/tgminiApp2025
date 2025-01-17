@@ -7,6 +7,7 @@ import { StringSchema } from '../zod/common';
 import {
   UpdateEventSchema,
   EventSchema,
+  FiltersEventSchema,
 } from '../zod/event';
 
 export const EventRouter = {
@@ -25,16 +26,23 @@ export const EventRouter = {
     }
   }),
 
-  list: publicProcedure.query(async (opts) => {
+  list: publicProcedure.input(FiltersEventSchema).query(async (opts) => {
     try {
-      const { ctx } = opts;
+      const { ctx, input } = opts;
       await CommonService.checkAuth(ctx, true);
-      const events = await EventRepository.getEvents();
-      const res = events.map((el) => ({
+      const events = await EventRepository.getEvents(input);
+      const resAllEvents = events.allEvents.map((el) => ({
         ...el,
         eventId: String(el.eventId),
       }));
-      return new CommonResponse(res);
+      const resEvents = events.filtered.map((el) => ({
+        ...el,
+        eventId: String(el.eventId),
+      }));
+      return new CommonResponse({
+        filtered: resEvents,
+        all: resAllEvents
+      });
     } catch (e) {
       const err = e as Error;
       return new ErrorResponse(err);

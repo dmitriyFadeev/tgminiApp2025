@@ -13,6 +13,7 @@ export const EventSchema = baseSchema
     imageUrl: true,
     description: true,
     interest: true,
+    onWater:true
   })
   .extend({
     name: z.string(),
@@ -21,8 +22,20 @@ export const EventSchema = baseSchema
     imageUrl: z.string(),
     description: z.string(),
     interest: z.string(),
+    onWater:z.boolean()
   });
 
 export const UpdateEventSchema = EventSchema.extend({
     eventId: z.string(),
+});
+
+export const FiltersEventSchema = z.object({
+  dateFrom: z.date(),
+  dateTo: z.date(),
+  freeSpaces: z.boolean(),
+  interests: z.string().array(),
+  onWater: z.boolean(),
+  location: z.string(),
+  file: z.any(),
+  name: z.string(),
 });
